@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+
+  flask:
+    build: ./flask
+    container_name: flask
+    restart: always
+    environment:
+      - APP_NAME=./flask/run.py
+      #- APP_NAME=FlaskApp
+      #- VIRTUAL_PROTO=uwsgi #
+      #- VIRTUAL_HOST=www.testdomain.com
+    command: flask run --host=0.0.0.0
+    ports: # 
+      - 8080:5000 #
+    #expose:
+    #  - 80
+    networks:
+      nginx_proxy_network:
+        aliases: 
+          - flask
+
+
+  sql_db:
+    build: ./sql_db
+    container_name: sql_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: PASSWORD
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: PASSWORD
+    networks: 
+      nginx_proxy_network:
+        aliases: 
+          - wordpress
+      
+       
+
+  wordpress:
+    depends_on:
+      - sql_db
+    build: ./wordpress
+    container_name: wordpress
+    ports:
+      - "80"
+    restart: always
+    volumes:
+      - wordpress:/var/www/html
+    environment:
+      #VIRTUAL_HOST: blog.DOMAIN.TLD
+      WORDPRESS_DB_HOST: sql_db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: PASSWORD
+      WORDPRESS_DB_NAME: wordpress
+    networks: 
+      nginx_proxy_network:
+        aliases: 
+          - wordpress
+      
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      nginx_proxy_network:
+        aliases: 
+          - nginx-proxy
+    
+
+networks:
+  nginx_proxy_network:
+    name: nginx_proxy_network
+    
+volumes:
+  db_data:
+    driver: local
+    name: db_data
+  wordpress:
+    driver: local
+    name: wordpress
