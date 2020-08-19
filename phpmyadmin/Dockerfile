@@ -1,0 +1,1 @@
+FROM ebspace/armhf-phpmyadmin:latest

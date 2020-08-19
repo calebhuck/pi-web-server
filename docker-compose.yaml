@@ -2,28 +2,13 @@ version: "3.8"
 
 services:
 
-  flask:
-    build: ./flask
-    container_name: flask
-    restart: always
-    environment:
-      - APP_NAME=./flask/run.py
-      - APP_NAME=FlaskApp
+  sql_db_caleb:
+    build: ./sql_db_caleb
+    container_name: sql_db_caleb
     expose:
-      - 3031
-    networks:
-      nginx_proxy_network:
-        aliases: 
-          - flask
-
-
-  sql_db:
-    build: ./sql_db
-    container_name: sql_db
-    ports:
-      - "3306:3306"
+      - 3306
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data_caleb:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: PASSWORD
@@ -33,28 +18,86 @@ services:
     networks: 
       nginx_proxy_network:
         aliases: 
-          - sql_db
+          - sql_db_caleb
       
-       
-  wordpress:
+        
+  wordpress_caleb:
     depends_on:
-      - sql_db
-    build: ./wordpress
-    container_name: wordpress
+      - sql_db_caleb
+    build: ./wordpress_caleb
+    container_name: wordpress_caleb
     ports:
       - 80
     restart: always
-    volumes: ['./wordpress_data:/var/www/html']
+    volumes: ['wordpress_caleb_data:/var/www/html']
     environment:
-      SERVER_NAME: www.wordpress.com
-      WORDPRESS_DB_HOST: sql_db:3306
+      SERVER_NAME: calebhuck.me
+      WORDPRESS_DB_HOST: sql_db_caleb:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: PASSWORD
       WORDPRESS_DB_NAME: wordpress
     networks: 
       nginx_proxy_network:
         aliases: 
-          - wordpress
+          - wordpress_caleb
+
+
+  sql_db_sam:
+    build: ./sql_db_sam
+    container_name: sql_db_sam
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data_sam:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: PASSWORD
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: PASSWORD
+    networks: 
+      nginx_proxy_network:
+        aliases: 
+          - sql_db_sam
+      
+       
+  wordpress_sam:
+    depends_on:
+      - sql_db_sam
+    build: ./wordpress_sam
+    container_name: wordpress_sam
+    ports:
+      - 80
+    restart: always
+    volumes: ['wordpress_sam_data:/var/www/html']
+    environment:
+      SERVER_NAME: atthetable.community
+      WORDPRESS_DB_HOST: sql_db_sam:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: PASSWORD
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      nginx_proxy_network:
+        aliases: 
+          - wordpress_sam
+
+  phpmyadmin:
+    build: ./phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      - PMA_HOST=sql_db_caleb
+      - PMA_PORT=3306
+      - PMA_USER=wordpress
+      - PMA_PASSWORD=PASSWORD
+      - PMA_ABSOLUTE_URI=http://phpmyadmin.calebhuck.me/
+    restart: always
+    ports:
+      - 80
+    volumes: ['phpmyadmin_data:/sessions']
+    networks:
+      nginx_proxy_network:
+        aliases: 
+          - pypmyadmin
 
 
   nginx:
@@ -68,6 +111,11 @@ services:
         aliases: 
           - nginx-proxy
 
+  dns_updater:
+    build: ./DNS_Updater
+    container_name: DNS_Updater
+    restart: always
+
 
 networks:
   nginx_proxy_network:
@@ -75,9 +123,23 @@ networks:
 
 
 volumes:
-  db_data:
+  #sam's wordpress site db and site data
+  db_data_sam:
     driver: local
-    name: db_data
-  wordpress:
+    name: db_data_sam
+  wordpress_sam_data:
     driver: local
-    name: wordpress
+    name: wordpress_sam_data
+
+  #caleb's wordpress site db and site data
+  db_data_caleb:
+    driver: local
+    name: db_data_caleb
+  wordpress_caleb_data:
+    driver: local
+    name: wordpress_caleb_data
+
+  #pypmyadmin session data
+  phpmyadmin_data:
+    driver: local
+    name: pypmyadmin_data
