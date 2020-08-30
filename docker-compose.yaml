@@ -81,23 +81,23 @@ services:
         aliases: 
           - wordpress_sam
 
-  phpmyadmin:
-    build: ./phpmyadmin
-    container_name: phpmyadmin
-    environment:
-      - PMA_HOST=sql_db_caleb
-      - PMA_PORT=3306
-      - PMA_USER=wordpress
-      - PMA_PASSWORD=PASSWORD
-      - PMA_ABSOLUTE_URI=http://phpmyadmin.calebhuck.me/
-    restart: always
-    ports:
-      - 80
-    volumes: ['phpmyadmin_data:/sessions']
-    networks:
-      nginx_proxy_network:
-        aliases: 
-          - pypmyadmin
+  #phpmyadmin:
+  #  build: ./phpmyadmin
+  #  container_name: phpmyadmin
+  #  environment:
+  #    - PMA_HOST=sql_db_caleb
+  #    - PMA_PORT=3306
+  #    - PMA_USER=wordpress
+  #    - PMA_PASSWORD=PASSWORD
+  #    - PMA_ABSOLUTE_URI=http://phpmyadmin.calebhuck.me/
+  #  restart: always
+  #  ports:
+  #    - 80
+  #  volumes: ['phpmyadmin_data:/sessions']
+  #  networks:
+  #    nginx_proxy_network:
+  #      aliases: 
+  #        - pypmyadmin
 
 
   nginx:
