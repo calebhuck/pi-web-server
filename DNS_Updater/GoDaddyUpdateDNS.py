@@ -13,7 +13,7 @@ domains = ['calebhuck.me', 'atthetable.community']
 ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
 
 #create godaddy object used for retrieving dns info and updating
-account = Account(api_key='dLYcRuj5Jvon_C9Gz81S14bbA4k9SzAdVYU', api_secret='XUjWPZWz9wQeTkrEoxL1JV')
+account = Account(api_key='', api_secret='')
 client = Client(account)
 
 #infinite loop to check if the dynamic ip has changed, and if so then update dns records
