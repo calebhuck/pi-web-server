@@ -9,11 +9,24 @@ import time
 
 domains = ['calebhuck.me', 'atthetable.community']
 
+#read api keys from file
+key = None
+secret = None
+with open('secret.key', 'rt') as f:
+    secret = f.read()
+
+with open('key.key', 'rt') as f:
+    key = f.read()
+
 #get the current public ip
 ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
 
 #create godaddy object used for retrieving dns info and updating
-account = Account(api_key='dLYcRuj5Jvon_C9Gz81S14bbA4k9SzAdVYU', api_secret='XUjWPZWz9wQeTkrEoxL1JV')
+if secret is not None and key is not None:
+    account = Account(api_key=key, api_secret=secret)
+else:
+    raise Exception('api secret or key was None')
+
 client = Client(account)
 
 #infinite loop to check if the dynamic ip has changed, and if so then update dns records
