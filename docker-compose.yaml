@@ -106,6 +106,7 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     networks:
       nginx_proxy_network:
         aliases: 
@@ -114,6 +115,11 @@ services:
   dns_updater:
     build: ./DNS_Updater
     container_name: DNS_Updater
+    restart: always
+  
+  cloudflare_updater:
+    build: ./Cloudflare_Updater
+    container_name: Cloudflare_Updater
     restart: always
 
 

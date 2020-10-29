@@ -7,7 +7,7 @@ from godaddypy import Client, Account
 import urllib.request
 import time
 
-domains = ['calebhuck.me', 'atthetable.community']
+domains = ['atthetable.community']
 
 #read api keys from file
 key = None
@@ -17,9 +17,6 @@ with open('secret.key', 'rt') as f:
 
 with open('key.key', 'rt') as f:
     key = f.read()
-
-#get the current public ip
-ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
 
 #create godaddy object used for retrieving dns info and updating
 if secret is not None and key is not None:
@@ -31,6 +28,8 @@ client = Client(account)
 
 #infinite loop to check if the dynamic ip has changed, and if so then update dns records
 while True:
+    #get the current public ip
+    ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
     for domain in domains:
         record = client.get_records(domain, record_type='A', name='@')
         current_ip = record[0].get('data')
