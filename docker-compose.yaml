@@ -99,7 +99,6 @@ services:
   #      aliases: 
   #        - pypmyadmin
 
-
   nginx:
     build: ./nginx
     container_name: nginx
@@ -121,6 +120,31 @@ services:
     build: ./Cloudflare_Updater
     container_name: Cloudflare_Updater
     restart: always
+    
+  #pihole:
+  #  container_name: pihole
+  #  image: pihole/pihole:latest
+  #  ports:
+  #    - "53/tcp"
+  #    - "53/udp"
+  #    - "67/udp"
+  #    - "80/tcp"
+  #    - "443/tcp"
+  #  environment:
+  #    TZ: 'America/Chicago'
+  #    WEBPASSWORD: 'password'
+  #  volumes:
+  #    - 'pihole_data:/etc/pihole/'
+  #    - 'pihole_dns_masq:/etc/dnsmasq.d/'
+  #  # Recommended but not required (DHCP needs NET_ADMIN)
+  #  #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+  #  cap_add:
+  #    - NET_ADMIN
+  #  restart: unless-stopped
+  #  networks:
+  #    nginx_proxy_network:
+  #      aliases: 
+  #        - pihole
 
 
 networks:
@@ -149,3 +173,11 @@ volumes:
   phpmyadmin_data:
     driver: local
     name: pypmyadmin_data
+
+  #pihole data
+  pihole_data:
+    driver: local
+    name: pihole_data
+  pihole_dns_masq:
+    driver: local
+    name: pihole_dns_masq
